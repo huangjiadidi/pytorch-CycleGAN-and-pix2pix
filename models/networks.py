@@ -363,14 +363,25 @@ class ResnetGenerator(nn.Module):
                       norm_layer(int(ngf * mult / 2)),
                       nn.ReLU(True)]
         model += [nn.ReflectionPad2d(3)]
-        model += [nn.Conv2d(ngf, output_nc, kernel_size=7, padding=0)]
-        model += [nn.Tanh()]
-
         self.model = nn.Sequential(*model)
+        self.conv_main = nn.Conv2d(ngf, output_nc, kernel_size=7, padding=0)
+
+        self.conv1 = nn.Conv2d(64, 1, kernel_size=4, stride=1, padding=1)
+
+        self.fc1 = nn.Linear(37*37, 1)
+
+        self.tanh = nn.Tanh()
+
+        
 
     def forward(self, input):
         """Standard forward"""
-        return self.model(input)
+        x = self.model(input)
+        x_w = torch.relu(self.conv1(x))
+        x_w = torch.flatten(x_w, 1)
+        x_w = torch.sigmoid(self.fc1(x_w))
+        x = self.tanh(self.conv_main(x))
+        return x, x_w
 
 
 class ResnetBlock(nn.Module):

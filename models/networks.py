@@ -379,7 +379,8 @@ class ResnetGenerator(nn.Module):
         x = self.model(input)
         x_w = torch.relu(self.conv1(x))
         x_w = torch.flatten(x_w, 1)
-        # x_w = torch.sigmoid(self.fc1(x_w))
+        x_w = self.fc1(x_w)
+        # x_w = torch.sigmoid(x_w)
         x = self.tanh(self.conv_main(x))
         return x, x_w
 

@@ -628,40 +628,23 @@ class PixelDiscriminator(nn.Module):
 
 
 class Discriminator(nn.Module):
-    def __init__(self, img_size, dim):
-        """
-        img_size : (int, int, int)
-            Height and width must be powers of 2.  E.g. (32, 32, 1) or
-            (64, 128, 3). Last number indicates number of channels, e.g. 1 for
-            grayscale or 3 for RGB
-        """
+    def __init__(self, DIM):
         super(Discriminator, self).__init__()
-
-        self.img_size = img_size
-
-        self.image_to_features = nn.Sequential(
-            nn.Conv2d(self.img_size[2], dim, 4, 2, 1),
-            nn.LeakyReLU(0.2),
-            nn.Conv2d(dim, 2 * dim, 4, 2, 1),
-            nn.LeakyReLU(0.2),
-            nn.Conv2d(2 * dim, 4 * dim, 4, 2, 1),
-            nn.LeakyReLU(0.2),
-            nn.Conv2d(4 * dim, 8 * dim, 4, 2, 1),
-            nn.Sigmoid()
+        self.DIM = DIM
+        main = nn.Sequential(
+            nn.Conv2d(3, DIM, 3, 2, padding=1),
+            nn.LeakyReLU(),
+            nn.Conv2d(DIM, 2 * DIM, 3, 2, padding=1),
+            nn.LeakyReLU(),
+            nn.Conv2d(2 * DIM, 4 * DIM, 3, 2, padding=1),
+            nn.LeakyReLU(),
         )
 
-        # 4 convolutions of stride 2, i.e. halving of size everytime
-        # So output size will be 8 * (img_size / 2 ^ 4) * (img_size / 2 ^ 4)
-        output_size = 8 * dim * (img_size[0] / 16) * (img_size[1] / 16)
-        # print("output size is", output_size)
-        self.features_to_prob = nn.Sequential(
-            nn.Linear(int(output_size), 1),
-            nn.Sigmoid()
-        )
+        self.main = main
+        self.linear = nn.Linear(4*4*4*DIM, 1)
 
-    def forward(self, input_data):
-        batch_size = input_data.size()[0]
-        x = self.image_to_features(input_data)
-        print("x shape is:", x.shape)
-        x = x.view(batch_size, -1)
-        return self.features_to_prob(x)
+    def forward(self, input):
+        output = self.main(input)
+        output = output.view(-1, 4*4*4*self.DIM)
+        output = self.linear(output)
+        return output

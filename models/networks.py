@@ -645,6 +645,6 @@ class Discriminator(nn.Module):
 
     def forward(self, input):
         output = self.main(input)
-        output = output.view(-1, 4*4*4*DIM)
+        output = output.view(-1, 4*4*4*self.DIM)
         output = self.linear(output)
         return output

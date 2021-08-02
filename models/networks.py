@@ -647,7 +647,7 @@ class Discriminator(nn.Module):
             nn.Conv2d(2 * dim, 4 * dim, 4, 2, 1),
             nn.LeakyReLU(0.2),
             nn.Conv2d(4 * dim, 8 * dim, 4, 2, 1),
-            nn.Sigmoid()
+            # nn.Sigmoid()
         )
 
         # 4 convolutions of stride 2, i.e. halving of size everytime
@@ -655,7 +655,7 @@ class Discriminator(nn.Module):
         output_size = 8 * dim * (img_size[0] / 16) * (img_size[1] / 16)
         self.features_to_prob = nn.Sequential(
             nn.Linear(int(output_size), 1),
-            nn.Sigmoid()
+            # nn.Sigmoid()
         )
 
     def forward(self, input_data):

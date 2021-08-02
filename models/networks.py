@@ -653,6 +653,7 @@ class Discriminator(nn.Module):
         # 4 convolutions of stride 2, i.e. halving of size everytime
         # So output size will be 8 * (img_size / 2 ^ 4) * (img_size / 2 ^ 4)
         output_size = 8 * dim * (img_size[0] / 16) * (img_size[1] / 16)
+        print("output size is", output_size)
         self.features_to_prob = nn.Sequential(
             nn.Linear(output_size, 1),
             nn.Sigmoid()

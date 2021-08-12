@@ -366,18 +366,23 @@ class ResnetGenerator(nn.Module):
         self.model = nn.Sequential(*model)
         self.conv_main = nn.Conv2d(ngf, output_nc, kernel_size=7, padding=0)
 
-        self.conv1 = nn.Conv2d(64, 1, kernel_size=4, stride=1, padding=1)
+        self.conv1 = nn.Conv2d(64, 32, kernel_size=3, stride=2, padding=1)
+
+        self.conv2 = nn.Conv2d(32, 1, kernel_size=3, stride=2, padding=1)
 
         self.fc1 = nn.Linear(37*37, 1)
 
         self.tanh = nn.Tanh()
-
+        self.lrelu = nn.LeakyReLU(0.2, True)
         
 
     def forward(self, input):
         """Standard forward"""
         x = self.model(input)
-        x_w = torch.relu(self.conv1(x))
+        x_w = self.lrelu(self.conv1(x))
+        print("the shape of x_w is", x_w.shape)
+        x_w = self.lrelu(self.conv2(x_w))
+        print("the shape of x_w is", x_w.shape)
         x_w = torch.flatten(x_w, 1)
         x_w = self.fc1(x_w)
         # x_w = torch.sigmoid(x_w)

@@ -370,7 +370,7 @@ class ResnetGenerator(nn.Module):
 
         self.conv2 = nn.Conv2d(32, 1, kernel_size=3, stride=2, padding=1)
 
-        self.fc1 = nn.Linear(37*37, 1)
+        self.fc1 = nn.Linear(100, 1)
 
         self.tanh = nn.Tanh()
         self.lrelu = nn.LeakyReLU(0.2, True)
@@ -384,6 +384,7 @@ class ResnetGenerator(nn.Module):
         x_w = self.lrelu(self.conv2(x_w))
         print("the shape of x_w is", x_w.shape)
         x_w = torch.flatten(x_w, 1)
+        print("the shape of x_w is", x_w.shape)
         x_w = self.fc1(x_w)
         # x_w = torch.sigmoid(x_w)
         x = self.tanh(self.conv_main(x))
